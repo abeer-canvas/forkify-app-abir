@@ -7,9 +7,9 @@ import 'core-js/stable';// this is for polyfilling everything.
 import 'regenerator-runtime/runtime';//this is for polyfilling async and await
 import { async } from 'regenerator-runtime';
 
-if(module.hot) {
-  module.hot.accept();
-}
+// if(module.hot) {
+//   module.hot.accept();
+// }
 
 // https://forkify-api.herokuapp.com/v2
 
@@ -42,7 +42,8 @@ const controlSearchResults = async function() {
     await model.loadSearchResults(query);
 
     // 3) Log results
-    resultsView.render(model.state.search.results);
+    // resultsView.render(model.state.search.results);
+    resultsView.render(model.getSearchResultsPage());
   } catch (err) {
     console.log(err);
   }
