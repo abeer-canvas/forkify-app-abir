@@ -495,7 +495,10 @@ const controlRecipes = async function () {
     const id = window.location.hash.slice(1);
     if (!id) return;
 
-    _recipeView.default.renderSpinner(); // 1) Loading Recipe
+    _recipeView.default.renderSpinner(); // 0) Update results view to mark selected search result
+
+
+    _resultsView.default.update(model.getSearchResultsPage()); // 1) Loading Recipe
 
 
     await model.loadRecipe(id); // 2) Rendering Recipe
@@ -6144,7 +6147,6 @@ class View {
   }
 
   update(data) {
-    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
     this._data = data;
 
     const newMarkup = this._generateMarkup();
@@ -6776,9 +6778,10 @@ class ResultsView extends _View.default {
   }
 
   _generateMarkupPreview(result) {
+    const id = window.location.hash.slice(1);
     return `
       <li class="preview">
-        <a class="preview__link" href="#${result.id}">
+        <a class="preview__link ${result.id === id ? 'preview__link--active' : ''}" href="#${result.id}">
           <figure class="preview__fig">
             <img src="${result.image}" alt="${result.title}" />
           </figure>
