@@ -500,12 +500,13 @@ const controlRecipes = async function () {
     _recipeView.default.renderSpinner(); // 0) Update results view to mark selected search result
 
 
-    _resultsView.default.update(model.getSearchResultsPage());
-
-    _bookmarksView.default.update(model.state.bookmarks); // 1) Loading Recipe
+    _resultsView.default.update(model.getSearchResultsPage()); // 1) Updating bookmarks view
 
 
-    await model.loadRecipe(id); // 2) Rendering Recipe
+    _bookmarksView.default.update(model.state.bookmarks); // 2) Loading Recipe
+
+
+    await model.loadRecipe(id); // 3) Rendering Recipe
 
     _recipeView.default.render(model.state.recipe);
   } catch (err) {
@@ -560,7 +561,13 @@ const controlAddBookmark = function () {
   _bookmarksView.default.render(model.state.bookmarks);
 };
 
+const controlBookmarks = function () {
+  _bookmarksView.default.render(model.state.bookmarks);
+};
+
 const init = function () {
+  _bookmarksView.default.addHandlerRender(controlBookmarks);
+
   _recipeView.default.addHandlerRender(controlRecipes);
 
   _recipeView.default.addHandlerUpdateServings(controlServings);
@@ -5201,11 +5208,16 @@ const updateServings = function (newServings) {
 
 exports.updateServings = updateServings;
 
+const persistBookmarks = function () {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
 const addBookmark = function (recipe) {
   // Add bookmark
   state.bookmarks.push(recipe); // Mark current recipe as bookmark
 
   if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+  persistBookmarks();
 };
 
 exports.addBookmark = addBookmark;
@@ -5215,9 +5227,21 @@ const deleteBookmark = function (id) {
   state.bookmarks.splice(index, 1); // Mark current recipe as NOT bookmark
 
   if (id === state.recipe.id) state.recipe.bookmarked = false;
+  persistBookmarks();
 };
 
 exports.deleteBookmark = deleteBookmark;
+
+const init = function () {
+  const storage = localStorage.getItem('bookmarks');
+  if (storage) state.bookmarks = JSON.parse(storage);
+};
+
+init();
+
+const clearBookmarks = function () {
+  localStorage.clear('bookmarks');
+}; // clearBookmarks();
 },{"regenerator-runtime":"e155e0d3930b156f86c48e8d05522b16","./config.js":"09212d541c5c40ff2bd93475a904f8de","./helpers.js":"0e8dcd8a4e1c61cf18f78e1c2563655d"}],"e155e0d3930b156f86c48e8d05522b16":[function(require,module,exports) {
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -6992,6 +7016,10 @@ class BookmarksView extends _View.default {
     _defineProperty(this, "_message", '');
   }
 
+  addHandlerRender(handler) {
+    window.addEventListener('load', handler);
+  }
+
   _generateMarkup() {
     return this._data.map(bookmark => _previewView.default.render(bookmark, false)).join('');
   }
@@ -7001,6 +7029,6 @@ class BookmarksView extends _View.default {
 var _default = new BookmarksView();
 
 exports.default = _default;
-},{"./View.js":"61b7a1b097e16436be3d54c2f1828c73","url:../../img/icons.svg":"c9e52c185b53f14ac5ca95016de74939","./previewView.js":"e4d6583325a8b6c9380670c4f233bf07"}]},{},["2d2da8ef2f29de29acaaf1f939b79bb2","4e41540539c36500b3e7696e6fa54c1e","175e469a7ea7db1c8c0744d04372621f"], null)
+},{"./View.js":"61b7a1b097e16436be3d54c2f1828c73","./previewView.js":"e4d6583325a8b6c9380670c4f233bf07","url:../../img/icons.svg":"c9e52c185b53f14ac5ca95016de74939"}]},{},["2d2da8ef2f29de29acaaf1f939b79bb2","4e41540539c36500b3e7696e6fa54c1e","175e469a7ea7db1c8c0744d04372621f"], null)
 
 //# sourceMappingURL=controller.4ff2f352.js.map
